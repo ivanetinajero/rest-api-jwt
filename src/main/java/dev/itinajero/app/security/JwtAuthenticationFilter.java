@@ -33,7 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             logger.info("Token JWT recibido en el header Authorization");
-            Claims claims = jwtUtil.getClaims(token);
+            // 4. Validación del token en cada petición
+            Claims claims = jwtUtil.validateToken(token);
             if (claims != null) {
                 String username = claims.getSubject();
                 logger.info("Token JWT válido para usuario: {}", username);

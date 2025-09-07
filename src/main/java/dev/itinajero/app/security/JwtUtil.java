@@ -47,27 +47,14 @@ public class JwtUtil {
         return token;
     }
 
-    public String validateToken(String token) {
+    public Claims validateToken(String token) {
+        logger.info("Validando token JWT");
         try {
-            logger.info("Validando token JWT");
-            Claims claims = getClaims(token);
-            logger.debug("Token válido para usuario: {}", claims != null ? claims.getSubject() : null);
-            return claims != null ? claims.getSubject() : null;
+            Claims claims = Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload();
+            logger.debug("Token válido para usuario: {}", claims.getSubject());
+            return claims;
         } catch (JwtException e) {
             logger.error("Token JWT inválido: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    public Claims getClaims(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith(getKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        } catch (JwtException e) {
-            logger.error("Error al extraer claims del token JWT: {}", e.getMessage());
             return null;
         }
     }

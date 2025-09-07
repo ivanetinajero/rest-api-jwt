@@ -36,7 +36,7 @@ Este proyecto implementa una API REST profesional con autenticación y autorizac
 - **Componente:** `JwtUtil`
 - **Descripción:** Extrae claims personalizados (usuario, perfiles, sucursal, etc.) para establecer el contexto de seguridad.
 - **Clase/Método:**
-  - `JwtUtil.getClaimsFromToken()`
+  - `JwtUtil.validateToken(token)`
 
 ### 6. Configuración de seguridad y rutas protegidas
 - **Componente:** `SecurityConfig`

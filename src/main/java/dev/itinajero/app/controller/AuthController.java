@@ -25,6 +25,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // 1. Login y generación de token
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody Login loginDTO) {
         logger.info("Intento de login para usuario: {}", loginDTO.getUsername());
@@ -35,6 +36,7 @@ public class AuthController {
         }
         String token = jwtUtil.generateToken(usuario);
         logger.info("Login exitoso, token generado para usuario: {}", loginDTO.getUsername());
+        // 2. Respuesta de login
         return ResponseEntity.ok(new AuthResponse(token, "Login exitoso"));
     }
 
