@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import dev.itinajero.app.model.Producto;
+import dev.itinajero.app.security.JwtUtil;
 import dev.itinajero.app.service.IProductosService;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -25,10 +29,38 @@ public class ProductosController {
     private static final Logger logger = LogManager.getLogger(ProductosController.class);
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     private IProductosService productosService;
 
     @GetMapping
-    public ResponseEntity<List<Producto>> listarProductos() {
+    public ResponseEntity<List<Producto>> listarProductos(Authentication auth, HttpServletRequest request) {        
+        
+        /*******************************************************
+         * Ejemplo: obtener claims del usuario autenticado *****
+         *******************************************************/
+
+        String username = auth.getName();
+        Object principal = auth.getPrincipal();
+        var authorities = auth.getAuthorities();
+        logger.info("Usuario autenticado: {}", username);
+        logger.info("Detalles del principal: {}", principal);
+        logger.info("Authorities: {}", authorities);           
+
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7); // Omitimos el prefijo "Bearer "
+        Claims claims =jwtUtil.validateToken(token);
+        logger.info("Claims obtenidos del token: {}", claims);
+        logger.info("idSucursal: {}", claims.get("idSucursal"));
+        logger.info("sucursal: {}", claims.get("sucursal"));
+        logger.info("nombreCompleto: {}", claims.get("nombreCompleto"));
+        logger.info("email: {}", claims.get("email"));
+
+        /*******************************************************
+         * Ejemplo: obtener claims del usuario autenticado *****
+         *******************************************************/
+
         logger.info("Consultando todos los productos");
         List<Producto> productos = productosService.buscarTodos();
         if (productos == null || productos.isEmpty()) {
@@ -65,7 +97,8 @@ public class ProductosController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizarProducto(@PathVariable int id, @Validated @RequestBody Producto producto) {
+    public ResponseEntity<Producto> actualizarProducto(@PathVariable int id,
+            @Validated @RequestBody Producto producto) {
         logger.info("Actualizando producto con ID: {}", id);
         Producto existente = productosService.buscarPorId(id);
         if (existente == null) {

@@ -47,6 +47,7 @@ public class JwtUtil {
         return token;
     }
 
+    // 5. Obtención de claims y roles
     public Claims validateToken(String token) {
         logger.info("Validando token JWT");
         try {

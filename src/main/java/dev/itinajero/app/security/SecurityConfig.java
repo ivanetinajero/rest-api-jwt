@@ -29,13 +29,14 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    // 6. Configuración de seguridad y rutas protegidas
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         logger.info("Configurando la seguridad de la aplicación");
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
+            .authorizeHttpRequests(auth -> auth                
                 .requestMatchers("/api/auth/**").permitAll() // Endpoints públicos para login/registro
                 .requestMatchers(HttpMethod.GET, "/api/productos/**").hasAnyAuthority("ADMIN", "SUPERVISOR")
                 .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAuthority("ADMIN")

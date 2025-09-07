@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 
+// 7. Manejo de errores y respuestas JSON
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
