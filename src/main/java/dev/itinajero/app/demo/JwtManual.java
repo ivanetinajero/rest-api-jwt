@@ -73,7 +73,7 @@ public class JwtManual {
 
     // Método para imprimir logs con fecha y hora (formato yyyy-MM-dd HH:mm)
     public static void log(String resultado) {
-        String fecha = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        String fecha = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         System.out.printf("[%s] %s\n", fecha, resultado);
     }
 
