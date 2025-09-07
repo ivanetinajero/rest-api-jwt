@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">Spring Boot REST API con JWT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .section-title { margin-top: 2rem; margin-bottom: 1rem; }
+        .card { margin-bottom: 2rem; }
+        .footer { margin-top: 3rem; padding: 1rem 0; background: #212529; color: #fff; text-align: center; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Spring Boot JWT Reference</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="display-5 text-center mb-4" th:text="${title}"></h1>
+                <p class="lead text-center" th:text="${intro}"></p>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Introducción</h2>
+                        <p>Esta referencia muestra cómo implementar y entender el flujo de autenticación JWT en una API REST profesional usando Spring Boot, Bootstrap 5 y Thymeleaf. Ideal para proyectos empresariales y como base para futuras implementaciones.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Versiones Utilizadas</h2>
+                        <ul>
+                            <li>Spring Boot: 4.0.0-M2</li>
+                            <li>Java: 21</li>
+                            <li>JJWT: 0.13.0</li>
+                            <li>Bootstrap: 5.3.8 (CDN)</li>
+                            <li>Thymeleaf: Starter y extras Spring Security 6</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Flujo JWT</h2>
+                        <ol>
+                            <li><strong>Login y generación de token</strong><br>
+                                <span class="text-muted">Clase/Método: AuthController.login(Login loginDTO), JwtUtil.generateToken(Usuario usuario)</span>
+                            </li>
+                            <li><strong>Respuesta de login</strong><br>
+                                <span class="text-muted">Clase/Método: AuthController.login()</span>
+                            </li>
+                            <li><strong>Envío de token en peticiones protegidas</strong><br>
+                                <span class="text-muted">Header: Authorization: Bearer &lt;token&gt;</span>
+                            </li>
+                            <li><strong>Validación del token en cada petición</strong><br>
+                                <span class="text-muted">Clase/Método: JwtAuthenticationFilter.doFilterInternal(), JwtUtil.validateToken(token)</span>
+                            </li>
+                            <li><strong>Obtención de claims y roles</strong><br>
+                                <span class="text-muted">Clase/Método: JwtUtil.validateToken(token)</span>
+                            </li>
+                            <li><strong>Configuración de seguridad y rutas protegidas</strong><br>
+                                <span class="text-muted">Clase/Método: SecurityConfig.configure(HttpSecurity http)</span>
+                            </li>
+                                <li><strong>Uso de claims en Controladores/Servicios</strong><br>
+                                    <span class="text-muted">Clase/Método: ProductosController.listarProductos(Authentication auth, HttpServletRequest request)</span><br>
+                                    <span class="text-muted">Ejemplo: Acceso a claims personalizados para lógica adicional (filtrar por sucursal, roles, etc.)</span>
+                                </li>
+                                <li><strong>Manejo de errores y respuestas JSON</strong><br>
+                                    <span class="text-muted">Clase/Método: GlobalExceptionHandler.handleValidationExceptions(), handleJwtException()</span>
+                                </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Ejemplos de Peticiones</h2>
+                        <h5>Login</h5>
+                        <pre><code>POST /api/auth/login
+Content-Type: application/json
+{
+  "username": "maria",
+  "password": "123456"
+}</code></pre>
+                        <h6>Respuesta (200):</h6>
+                        <pre><code>{
+  "token": "&lt;JWT_TOKEN&gt;",
+  "message": "Login exitoso"
+}</code></pre>
+                        <h6>Respuesta (401):</h6>
+                        <pre><code>{
+  "token": null,
+  "message": "Usuario o contraseña incorrectos"
+}</code></pre>
+                        <h5>Acceso a endpoint protegido</h5>
+                        <pre><code>GET /api/productos
+Authorization: Bearer &lt;JWT_TOKEN&gt;</code></pre>
+                        <h6>Respuesta (200):</h6>
+                        <pre><code>[
+  { "id": 1, "nombre": "Producto A", ... },
+  { "id": 2, "nombre": "Producto B", ... }
+]</code></pre>
+                        <h6>Respuesta (403):</h6>
+                        <pre><code>{
+  "error": "Acceso denegado. Token inválido o sin permisos."
+}</code></pre>
+                        <h5>Error de validación</h5>
+                        <pre><code>POST /api/productos
+Content-Type: application/json
+Authorization: Bearer &lt;JWT_TOKEN&gt;
+{
+  "nombre": ""
+}</code></pre>
+                        <h6>Respuesta (400):</h6>
+                        <pre><code>{
+  "errors": [
+    {
+      "field": "nombre",
+      "message": "El nombre es obligatorio"
+    }
+  ]
+}</code></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Recomendaciones de Seguridad</h2>
+                        <ul>
+                            <li>Usa una clave secreta robusta y guárdala fuera del código fuente (variables de entorno).</li>
+                            <li>Configura el algoritmo de firma JWT (HS256, HS384, etc.) según tus necesidades.</li>
+                            <li>Define tiempos de expiración cortos para el token (<code>exp</code> claim).</li>
+                            <li>Valida siempre el token en cada petición y maneja los errores correctamente.</li>
+                            <li>No expongas información sensible en los claims del JWT.</li>
+                            <li>Usa HTTPS en producción para proteger los tokens en tránsito.</li>
+                            <li>Actualiza dependencias de seguridad y JWT regularmente.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Componentes Clave</h2>
+                        <ul>
+                            <li><strong>AuthController</strong>: Login y generación de token.</li>
+                            <li><strong>JwtUtil</strong>: Generación, validación y extracción de claims del token.</li>
+                            <li><strong>JwtAuthenticationFilter</strong>: Validación de token en cada petición.</li>
+                            <li><strong>SecurityConfig</strong>: Configuración de rutas y roles.</li>
+                            <li><strong>GlobalExceptionHandler</strong>: Manejo profesional de errores y respuestas JSON.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="section-title">Conclusión</h2>
+                        <p>Esta landing page sirve como referencia profesional para la implementación de JWT en APIs REST con Spring Boot. El flujo, los ejemplos y las recomendaciones aquí presentadas te ayudarán a crear sistemas seguros, escalables y fáciles de mantener.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2025 - Spring Boot JWT Reference. Desarrollado por Iván E. Tinajero Díaz.
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

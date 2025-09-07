@@ -44,7 +44,27 @@ Este proyecto implementa una API REST profesional con autenticación y autorizac
 - **Clase/Método:**
   - `SecurityConfig.configure(HttpSecurity http)`
 
-### 7. Manejo de errores y respuestas JSON
+
+### 7. Uso de claims en Controladores/Servicios
+- **Componente:** `ProductosController`
+- **Descripción:** Los controladores y servicios pueden acceder a los claims del JWT para lógica adicional, como filtrar por sucursal, roles, etc. Ejemplo en `listarProductos`:
+- **Clase/Método:**
+  - `ProductosController.listarProductos(Authentication auth, HttpServletRequest request)`
+  - Obtiene el token JWT del header y extrae claims personalizados con `JwtUtil.validateToken(token)`
+  - Ejemplo de uso en el log:
+    ```java
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        String token = authHeader.substring(7);
+        Claims claims = jwtUtil.validateToken(token);
+        logger.info("idSucursal: {}", claims.get("idSucursal"));
+        logger.info("sucursal: {}", claims.get("sucursal"));
+        logger.info("nombreCompleto: {}", claims.get("nombreCompleto"));
+        logger.info("email: {}", claims.get("email"));
+    }
+    ```
+
+### 8. Manejo de errores y respuestas JSON
 - **Componente:** `GlobalExceptionHandler`
 - **Descripción:** Centraliza el manejo de errores, devolviendo respuestas JSON claras y profesionales.
 - **Clase/Método:**
